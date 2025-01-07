@@ -6,8 +6,5 @@ import (
 )
 
 func AgentRouter(router *gin.RouterGroup) {
-	err := router.GET("/", controllers.AgentTestController)
-	if err != nil {
-		return
-	}
+	router.GET("/", controllers.AgentTestController)
 }

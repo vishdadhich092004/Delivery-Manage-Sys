@@ -6,8 +6,5 @@ import (
 )
 
 func OrderRouter(router *gin.RouterGroup) {
-	err := router.GET("/", controllers.OrderTestController)
-	if err != nil {
-		return
-	}
+	router.GET("/", controllers.OrderTestController)
 }

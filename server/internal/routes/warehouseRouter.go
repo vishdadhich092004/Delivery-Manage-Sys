@@ -6,8 +6,5 @@ import (
 )
 
 func WarehouseRouter(router *gin.RouterGroup) {
-	err := router.GET("/", controllers.WarehouseTestController)
-	if err != nil {
-		return
-	}
+	router.GET("/", controllers.WarehouseTestController)
 }
