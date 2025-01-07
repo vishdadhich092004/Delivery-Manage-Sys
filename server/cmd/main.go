@@ -18,8 +18,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error Initialising the DataBase %v", err)
 	}
-	defer db.Close()
-
+	config.Migrate(db)
 	router := routes.SetupRoutes()
 
 	port := cfg.PORT
