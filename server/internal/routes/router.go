@@ -21,7 +21,7 @@ func SetupRoutes() *gin.Engine {
 
 	router.GET("/", func(ctx *gin.Context) {
 		ctx.JSON(200, gin.H{
-			"message": "HEY from Backend, Its all Good here:~",
+			"message": "Hey from Backend, Its all Good here:~",
 		})
 	})
 	// v1 := router.Group("/api/v1")

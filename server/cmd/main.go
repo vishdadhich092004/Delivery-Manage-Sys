@@ -4,8 +4,8 @@ import (
 	"log"
 
 	_ "github.com/joho/godotenv/autoload"
-	"github.com/vishdadhich092004/delivery-management-system/config"
-	"github.com/vishdadhich092004/delivery-management-system/routes"
+	"github.com/vishdadhich092004/delivery-management-system/internal/config"
+	"github.com/vishdadhich092004/delivery-management-system/internal/routes"
 )
 
 func main() {
