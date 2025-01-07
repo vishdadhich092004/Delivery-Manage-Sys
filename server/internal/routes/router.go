@@ -24,6 +24,7 @@ func SetupRoutes() *gin.Engine {
 			"message": "Hey from Backend, Its all Good here:~",
 		})
 	})
-	// v1 := router.Group("/api/v1")
+	v1 := router.Group("/api/v1")
+	V1Router(v1)
 	return router
 }
