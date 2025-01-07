@@ -2,28 +2,28 @@ package main
 
 import (
 	"log"
-	"os"
 
-	"github.com/gin-gonic/gin"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/vishdadhich092004/delivery-management-system/config"
+	"github.com/vishdadhich092004/delivery-management-system/routes"
 )
 
 func main() {
 
-	r := gin.Default()
-
-	r.GET("/", func(ctx *gin.Context) {
-		ctx.JSON(200, gin.H{
-			"message": "Hey from Backend",
-		})
-	})
-
-	db, err := config.NewDB(os.Getenv("POSTGRES_URI"))
+	cfg, err := config.SetConfig()
 	if err != nil {
-		log.Fatalf("Error Initialising the DataBase : %w", err)
+		log.Fatalf("Error setting up config : %v", err)
+	}
+	db, err := config.NewDB(cfg.POSTGRES_URI)
+	if err != nil {
+		log.Fatalf("Error Initialising the DataBase %v", err)
 	}
 	defer db.Close()
-	r.Run(":" + os.Getenv("PORT"))
+
+	router := routes.SetupRoutes()
+
+	port := cfg.PORT
+	log.Printf("Server is running on %s", port)
+	router.Run(":" + port)
 
 }
