@@ -1,66 +1,196 @@
 # Delivery Management System
 
-Delivery Management System is a web application designed to streamline the process of managing delivery orders. The system allows users to input order details, track delivery statuses, and manage delivery personnel, ensuring smooth and efficient operations.
+A robust backend system for managing delivery operations, agent assignments, and warehouse logistics. This system provides efficient order allocation and delivery tracking capabilities.
 
-## Features
-
-- **Order Management:** Add, update, and track delivery orders.
-- **Delivery Personnel Tracking:** Monitor the status and progress of delivery personnel.
-- **Real-time Updates:** Instant updates on the status of orders and deliveries.
-- **User Management:** Manage users who interact with the system.
-
-## Technologies Used
-
-- **Frontend:** Vue
-- **Backend:** Golang with Gin framework
-- **Database:** PostgreSQL
+## Table of Contents
+- [Installation](#installation)
+- [Models](#models)
+- [Features](#features)
+- [System Architecture](#system-architecture)
+- [Core Functionality](#core-functionality)
 
 ## Installation
 
-### Backend (Golang)
+### Prerequisites
+- Go 1.16 or higher
+- PostgreSQL database
+- Git
 
+### Quick Start
 1. Clone the repository:
+```bash
+git clone https://github.com/vishdadhich092004/Delivery-Manage-Sys.git
+```
 
-    ```bash
-    git clone https://github.com/vishdadhich092004/Delivery-Manage-Sys.git
-    cd Delivery-Manage-Sys
-    ```
-2. Navigate to the server directory:
+2. Navigate to the project directory:
+```bash
+cd Delivery-Manage-Sys
+```
 
-    ```bash
-    cd server
-    ```
+3. Navigate to the server directory:
+```bash
+cd server
+```
 
-3. Install Go dependencies:
+4. Install dependencies:
+```bash
+go mod tidy
+```
 
-    ```bash
-    go mod tidy
-    ```
+5. Set up environment variables:
+```bash
+    PORT  = 8080 or any choice
+    POSTGRES_URI = YOUR_POSTGRES
+```
 
-4. Run the backend:
+5. Run the application:
+```bash
+go run cmd/main.go
+```
 
-    ```bash
-    go run .\cmd\main.go
-    ```
+## Models
 
-### Frontend (Vue)   
+### Agent Model
+```go
+type Agent struct {
+    ID          uint      `json:"id"`
+    WarehouseID uint      `json:"warehouse_id"`
+    Name        string    `json:"name"`
+    Phone       string    `json:"phone"`
+    VehicleType string    `json:"vehicle_type"`
+    Status      string    `json:"status"`
+    CreatedAt   time.Time `json:"created_at"`
+}
+```
 
-1. Navigate to the client directory:
+### Agent Checkin Model
+```go
+type AgentCheckin struct {
+    ID           uint       `json:"id"`
+    AgentID      uint       `json:"agent_id"`
+    WarehouseID  uint       `json:"warehouse_id"`
+    CheckinTime  time.Time  `json:"checkin_time"`
+    CheckoutTime *time.Time `json:"checkout_time"`
+    Status       string     `json:"status"`
+    CreatedAt    time.Time  `json:"created_at"`
+}
+```
 
-    ```bash
-    cd client
-    ```
+### Agent Daily Stats Model
+```go
+type AgentDailyStats struct {
+    ID            uint      `json:"id"`
+    AgentID       uint      `json:"agent_id"`
+    Date          time.Time `json:"date"`
+    TotalOrders   int       `json:"total_orders"`
+    TotalDistance float64   `json:"total_distance"`
+    TotalDuration int       `json:"total_duration"` // in minutes
+    Earnings      float64   `json:"earnings"`
+}
+```
 
-2. Install frontend dependencies:
+### Order Model
+```go
+type Order struct {
+    ID              uint      `json:"id"`
+    WarehouseID     uint      `json:"warehouse_id"`
+    CustomerName    string    `json:"customer_name"`
+    DeliveryAddress string    `json:"delivery_address"`
+    Latitude        float64   `json:"latitude"`
+    Longitude       float64   `json:"longitude"`
+    Status          string    `json:"status"`
+    ScheduledDate   time.Time `json:"scheduled_date"`
+    CreatedAt       time.Time `json:"created_at"`
+}
+```
 
-    ```bash
-    npm install
-    ```
+### Order Assignment Model
+```go
+type OrderAssignment struct {
+    ID                uint       `json:"id"`
+    OrderID           uint       `json:"order_id"`
+    AgentID           uint       `json:"agent_id"`
+    AssignedAt        time.Time  `json:"assigned_at"`
+    EstimatedDistance float64    `json:"estimated_distance"`
+    EstimatedDuration int        `json:"estimated_duration"`
+    Status            string     `json:"status"`
+    CompletedAt       *time.Time `json:"completed_at"`
+}
+```
 
-3. Start the frontend server:
+### Warehouse Model
+```go
+type Warehouse struct {
+    ID        uint      `json:"id"`
+    Name      string    `json:"name"`
+    Address   string    `json:"address"`
+    Latitude  float64   `json:"latitude"`
+    Longitude float64   `json:"longitude"`
+    Status    string    `json:"status"`
+    CreatedAt time.Time `json:"created_at"`
+}
+```
 
-    ```bash
-    npm run dev
-    ```
+## Features
+- Warehouse management and geocoding
+- Delivery agent tracking and status management
+- Order allocation with distance and duration optimization
+- Agent performance analytics and daily statistics
+- Real-time order status tracking
+- Agent check-in/check-out system
+
+## System Architecture
+The system is built using Go and follows domain-driven design principles. Key components include:
+- Domain models for core business entities
+- Allocation algorithms for optimizing delivery routes
+- Geospatial calculations for distance estimation
+- Time-based scheduling and tracking
+
+## Core Functionality
+
+### Order Allocation Algorithm
+The system implements an intelligent order allocation algorithm:
+
+```go
+func AllocateToAgent(agent domain.Agent, orders []domain.Order, warehouse domain.Warehouse) []domain.OrderAssignment {
+    allocatedOrders := []domain.OrderAssignment{}
+    totalDistance := 0.0
+    totalDuration := 0
+
+    for _, order := range orders {
+        distance := utils.HaversineDistance(warehouse.Latitude, warehouse.Longitude, order.Latitude, order.Longitude)
+        duration := int(distance * 5) // 5 mins per km
+
+        // 10 hour limit and 100 km distance limit
+        if totalDuration+duration > 600 || totalDistance+distance > 100 {
+            break
+        }
+
+        // Assign the order to the agent
+        assignment := domain.OrderAssignment{
+            OrderID:           order.ID,
+            AgentID:           agent.ID,
+            AssignedAt:        time.Now(),
+            EstimatedDistance: distance,
+            EstimatedDuration: duration,
+            Status:            "assigned",
+        }
+        allocatedOrders = append(allocatedOrders, assignment)
+
+        totalDistance += distance
+        totalDuration += duration
+    }
+
+    return allocatedOrders
+}
+```
+
+Key features of the algorithm:
+- Respects agent work hour limits (10 hours max)
+- Considers maximum travel distance (100 km)
+- Calculates optimal routes using Haversine distance
+- Estimates delivery duration based on distance (5 mins per km)
 
 
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
