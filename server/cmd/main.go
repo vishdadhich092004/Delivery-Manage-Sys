@@ -21,6 +21,8 @@ func main() {
 	config.Migrate(db)
 	router := routes.SetupRoutes()
 
+	// to seed data
+	// seed.SeedDB()
 	port := cfg.PORT
 	log.Printf("Server is running on %s", port)
 	router.Run(":" + port)
