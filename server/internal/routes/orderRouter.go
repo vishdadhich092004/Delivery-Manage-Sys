@@ -9,10 +9,11 @@ import (
 func OrderRouter(router *gin.RouterGroup, db *gorm.DB) {
 
 	orderController := controllers.NewOrderController(db)
-	router.GET("/", orderController.OrderTestController)
-	router.GET("", orderController.GetOrders)
+	router.GET("/test", orderController.OrderTestController)
+	router.GET("/", orderController.GetOrders)
 	router.GET("/:id", orderController.GetOrder)
 	router.POST("", orderController.CreateOrder)
 	router.PUT("/:id", orderController.UpdateOrder)
 	router.POST("/:id/complete", orderController.CompleteOrder)
+
 }

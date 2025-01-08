@@ -15,6 +15,7 @@ func FilterAgents(agents []domain.Agent, warehouseID uint) []domain.Agent {
 			activeAgents = append(activeAgents, agent)
 		}
 	}
+
 	return activeAgents
 }
 

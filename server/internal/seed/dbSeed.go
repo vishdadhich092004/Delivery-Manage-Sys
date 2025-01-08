@@ -17,6 +17,8 @@ func SeedDB() {
 		panic("failed to connect db")
 	}
 
+	// delete any existing data before seeding
+	TruncateTables(db)
 	// seed warehouse
 	SeedWarehouse(db)
 

@@ -10,11 +10,12 @@ func WarehouseRouter(router *gin.RouterGroup, db *gorm.DB) {
 
 	warehouseController := controllers.NewWarehouseController(db)
 
-	router.GET("/", warehouseController.WarehouseTestController)
-	router.GET("", warehouseController.GetWarehouses)
+	router.GET("/test", warehouseController.WarehouseTestController)
+	router.GET("/", warehouseController.GetWarehouses)
 	router.GET("/:id", warehouseController.GetWarehouse)
 	router.POST("", warehouseController.CreateWarehouse)
 	router.PUT("/:id", warehouseController.UpdateWarehouse)
 	router.GET("/:id/agents", warehouseController.GetWarehouseAgents)
 	router.GET("/:id/orders", warehouseController.GetWarehouseOrders)
+	router.POST("/:id/orders/assign", warehouseController.AllocateOrders)
 }
