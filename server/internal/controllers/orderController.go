@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vishdadhich092004/delivery-management-system/internal/domain"
-	"github.com/vishdadhich092004/delivery-management-system/response"
+	"github.com/vishdadhich092004/delivery-management-system/pkg/response"
 	"gorm.io/gorm"
 )
 
