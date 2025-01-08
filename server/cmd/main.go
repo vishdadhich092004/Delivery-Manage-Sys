@@ -23,8 +23,7 @@ func main() {
 
 	// to seed data
 	// seed.SeedDB()
-	port := cfg.PORT
-	log.Printf("Server is running on %s", port)
-	router.Run(":" + port)
+	log.Printf("Server is running on 8080")
+	router.Run("0.0.0.0:8080")
 
 }
