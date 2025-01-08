@@ -18,9 +18,7 @@ func AllocateOrders(agents []domain.Agent, orders []domain.Order, warehouse doma
 	assignments := []domain.OrderAssignment{}
 
 	for _, agent := range activeAgents {
-		agentAssignments := helpers.AllocateToAgent(agent, sortedOrders, warehouse)
-
-		assignments = append(assignments, agentAssignments...)
+		assignments = helpers.AllocateToAgent(agent, sortedOrders, warehouse)
 	}
 	return assignments
 }

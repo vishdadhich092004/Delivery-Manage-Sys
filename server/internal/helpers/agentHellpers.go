@@ -50,4 +50,5 @@ func AllocateToAgent(agent domain.Agent, orders []domain.Order, warehouse domain
 	}
 
 	return allocatedOrders
+
 }

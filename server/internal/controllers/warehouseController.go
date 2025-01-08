@@ -159,20 +159,17 @@ func (wc *WarehouseController) AllocateOrders(ctx *gin.Context) {
 	// Allocate orders using the service logic
 	allocations := services.AllocateOrders(agents, orders, warehouse)
 
-	// // Save the allocations to the database
-	// for _, allocation := range allocations {
-	// 	if err := wc.db.Create(&allocation).Error; err != nil {
-	// 		ctx.JSON(http.StatusInternalServerError, response.ApiResponse(500, "error", gin.H{
-	// 			"error": "Failed to save order assignments",
-	// 		}))
-	// 		return
-	// 	}
-	// }
+	// Save the allocations to the database
+	for _, allocation := range allocations {
+		if err := wc.db.Create(&allocation).Error; err != nil {
+			ctx.JSON(http.StatusInternalServerError, response.ApiResponse(500, "error", gin.H{
+				"error": "Failed to save order assignments",
+			}))
+			return
+		}
+	}
 
 	ctx.JSON(http.StatusOK, response.ApiResponse(200, "success", gin.H{
 		"allocations": allocations,
-		// "warehouse": warehouse,
-		// "orders":    len(orders),
-		// "agents":    len(agents),
 	}))
 }
