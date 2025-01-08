@@ -1,5 +1,12 @@
+// src/main.ts
 import { createApp } from "vue";
-import "./style.css";
+import { createPinia } from "pinia";
 import App from "./App.vue";
+import "./style.css";
 
-createApp(App).mount("#app");
+const app = createApp(App);
+const pinia = createPinia();
+
+// Make sure to use pinia before mounting
+app.use(pinia);
+app.mount("#app");

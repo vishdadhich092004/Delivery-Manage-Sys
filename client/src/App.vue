@@ -1,30 +1,17 @@
 <script setup lang="ts">
-import HelloWorld from "./components/HelloWorld.vue";
+import { ref } from "vue";
+import TheHeader from "./components/TheHeader.vue";
+import OrdersTable from "./components/OrdersTable.vue";
+import AllocationsList from "./components/AllocationsList.vue";
+
+const activeTab = ref("orders");
 </script>
-
 <template>
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div class="min-h-screen bg-gray-100">
+    <TheHeader />
+    <main class="container mx-auto mt-6">
+      <OrdersTable v-if="activeTab === 'orders'" />
+      <AllocationsList v-else-if="activeTab === 'allocations'" />
+    </main>
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
-
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>
