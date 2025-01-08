@@ -14,6 +14,5 @@ func OrderRouter(router *gin.RouterGroup, db *gorm.DB) {
 	router.GET("/:id", orderController.GetOrder)
 	router.POST("", orderController.CreateOrder)
 	router.PUT("/:id", orderController.UpdateOrder)
-	router.POST("/:id/assign", orderController.AssignOrder)
 	router.POST("/:id/complete", orderController.CompleteOrder)
 }

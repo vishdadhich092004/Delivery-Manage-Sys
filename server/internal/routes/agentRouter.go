@@ -10,10 +10,10 @@ func AgentRouter(router *gin.RouterGroup, db *gorm.DB) {
 
 	agentController := controllers.NewAgentController(db)
 
-	router.GET("/", agentController.AgentTestController)
-	router.GET("", agentController.GetAgents)
+	router.GET("/test", agentController.AgentTestController)
+	router.GET("/", agentController.GetAgents)
 	router.GET("/:id", agentController.GetAgent)
-	router.POST("", agentController.CreateAgent)
+	router.POST("/", agentController.CreateAgent)
 	router.PUT("/:id", agentController.UpdateAgent)
 	router.POST("/:id/checkin", agentController.AgentCheckin)
 	router.POST("/:id/checkout", agentController.AgentCheckout)
