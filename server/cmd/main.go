@@ -19,7 +19,7 @@ func main() {
 		log.Fatalf("Error Initialising the DataBase %v", err)
 	}
 	config.Migrate(db)
-	router := routes.SetupRoutes()
+	router := routes.SetupRoutes(db)
 
 	// to seed data
 	// seed.SeedDB()

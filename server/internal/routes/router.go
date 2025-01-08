@@ -3,9 +3,10 @@ package routes
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-func SetupRoutes() *gin.Engine {
+func SetupRoutes(db *gorm.DB) *gin.Engine {
 
 	router := gin.Default()
 
@@ -25,6 +26,6 @@ func SetupRoutes() *gin.Engine {
 		})
 	})
 	v1 := router.Group("/api/v1")
-	V1Router(v1)
+	V1Router(v1, db)
 	return router
 }
