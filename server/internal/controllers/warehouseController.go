@@ -156,8 +156,10 @@ func (wc *WarehouseController) AllocateOrders(ctx *gin.Context) {
 		return
 	}
 
-	// Allocate orders using the service logic
-	allocations := services.AllocateOrders(agents, orders, warehouse)
+	// Allocate orders v1
+	// allocations := services.AllocateOrders(agents, orders, warehouse)
+	// Allocate orders v2
+	allocations := services.AllocateOrdersv2(agents, orders, warehouse)
 
 	// Save the allocations to the database
 	for _, allocation := range allocations {
