@@ -148,7 +148,7 @@ The system is built using Go and follows domain-driven design principles. Key co
 
 ## Core Functionality
 
-### Order Allocation Algorithm
+### Order Allocation Algorithm (v1)
 The system implements an intelligent order allocation algorithm:
 
 ```go
@@ -190,6 +190,55 @@ Key features of the algorithm:
 - Considers maximum travel distance (100 km)
 - Calculates optimal routes using Haversine distance
 - Estimates delivery duration based on distance (5 mins per km)
+
+## Core Functionality
+
+### Order Allocation Algorithm (v2)
+The system implements an advanced order allocation algorithm that optimizes delivery assignments using multiple factors:
+
+Key Components:
+1. **Agent Capacity Management**
+   - Tracks remaining work hours (10-hour daily limit)
+   - Monitors distance capacity (100 km limit)
+   - Maintains list of assigned orders per agent
+
+2. **Order Prioritization**
+   - Scores orders based on multiple factors:
+     - Distance from warehouse (60% weight)
+     - Order age/waiting time (40% weight)
+   - Lower scores get higher priority
+
+3. **Intelligent Agent Selection**
+   - Evaluates agents based on:
+     - Current workload capacity
+     - Number of existing assignments (load balancing)
+     - Vehicle type suitability
+
+Key Features:
+- Dynamic workload balancing across available agents
+- Prioritizes older orders while considering distance efficiency
+- Real-time capacity tracking and adjustment
+- Configurable parameters for distance and time limits
+  - Maximum working time: 10 hours (600 minutes)
+  - Maximum travel distance: 100 km
+  - Travel time estimation: 5 minutes per kilometer
+
+Algorithm Flow:
+1. Initialize agent capacities with fresh daily limits
+2. Score and sort pending orders by priority
+3. For each order:
+   - Find the most suitable agent based on capacity and workload
+   - Calculate estimated distance and duration
+   - Update agent's remaining capacity
+   - Create order assignment
+
+Improvements over v1:
+- More sophisticated order prioritization
+- Better load balancing across agents
+- Consideration of agent's current workload
+- More efficient resource utilization
+- Scalable and maintainable code structure
+
 
 
 ## License
