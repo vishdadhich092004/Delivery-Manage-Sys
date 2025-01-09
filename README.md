@@ -196,6 +196,81 @@ Key features of the algorithm:
 ### Order Allocation Algorithm (v2)
 The system implements an advanced order allocation algorithm that optimizes delivery assignments using multiple factors:
 
+```go
+
+func AllocateOrdersv2(agents []domain.Agent, orders []domain.Order, warehouse domain.Warehouse) []domain.OrderAssignment {
+	// Initialize agent capacities
+	agentCapacities := helpersv2.InitializeAgentCapacities(agents)
+
+	// Score and sort orders based on distance and basically waiting time
+	orderScores := helpersv2.ScoreOrders(orders, warehouse)
+
+	// main fxn allocating orders to agents
+	return helpersv2.AssignOrdersToAgents(agentCapacities, orderScores, warehouse)
+}
+
+```
+
+```go
+func AssignOrdersToAgents(
+	agentCapacities []AgentCapacity,
+	orderScores []OrderScore,
+	warehouse domain.Warehouse,
+) []domain.OrderAssignment {
+	allAssignments := make([]domain.OrderAssignment, 0)
+
+	// For each order we find best agent
+	for _, orderScore := range orderScores {
+		order := orderScore.Order
+		bestAgent := findBestAgentForOrder(order, agentCapacities, warehouse)
+
+		if bestAgent == nil {
+			continue // No agent can handle this order
+		}
+
+		// Calculate metrics
+		distance := utils.HaversineDistance(
+			warehouse.Latitude,
+			warehouse.Longitude,
+			order.Latitude,
+			order.Longitude,
+		)
+		duration := int(distance * MINUTES_PER_KM)
+
+		// Create assignment
+		assignment := domain.OrderAssignment{
+			OrderID:           order.ID,
+			AgentID:           bestAgent.Agent.ID,
+			AssignedAt:        time.Now(),
+			EstimatedDistance: distance,
+			EstimatedDuration: duration,
+			Status:            "ASSIGNED",
+		}
+
+		// Update agent capacity
+		bestAgent.RemainingTime -= duration
+		bestAgent.RemainingDist -= distance
+		bestAgent.AssignedOrders = append(bestAgent.AssignedOrders, assignment)
+
+		allAssignments = append(allAssignments, assignment)
+	}
+
+	return allAssignments
+}
+
+```
+
+```go
+// this workload score helps to identify the best agent
+		workloadScore := float64(agent.RemainingTime) / MAX_WORKING_MINUTES
+		orderCountScore := 1.0 / (float64(len(agent.AssignedOrders)) + 1)
+
+		// similar to order, we gave workload a factor of 0.6 and orderCount a factor f .4
+		score := workloadScore*0.6 + orderCountScore*0.4
+
+
+```
+
 Key Components:
 1. **Agent Capacity Management**
    - Tracks remaining work hours (10-hour daily limit)
