@@ -148,7 +148,7 @@ The system is built using Go and follows domain-driven design principles. Key co
 
 ## Core Functionality
 
-### Order Allocation Algorithm
+### Order Allocation Algorithm (v1)
 The system implements an intelligent order allocation algorithm:
 
 ```go
@@ -190,6 +190,130 @@ Key features of the algorithm:
 - Considers maximum travel distance (100 km)
 - Calculates optimal routes using Haversine distance
 - Estimates delivery duration based on distance (5 mins per km)
+
+## Core Functionality
+
+### Order Allocation Algorithm (v2)
+The system implements an advanced order allocation algorithm that optimizes delivery assignments using multiple factors:
+
+```go
+
+func AllocateOrdersv2(agents []domain.Agent, orders []domain.Order, warehouse domain.Warehouse) []domain.OrderAssignment {
+	// Initialize agent capacities
+	agentCapacities := helpersv2.InitializeAgentCapacities(agents)
+
+	// Score and sort orders based on distance and basically waiting time
+	orderScores := helpersv2.ScoreOrders(orders, warehouse)
+
+	// main fxn allocating orders to agents
+	return helpersv2.AssignOrdersToAgents(agentCapacities, orderScores, warehouse)
+}
+
+```
+
+```go
+func AssignOrdersToAgents(
+	agentCapacities []AgentCapacity,
+	orderScores []OrderScore,
+	warehouse domain.Warehouse,
+) []domain.OrderAssignment {
+	allAssignments := make([]domain.OrderAssignment, 0)
+
+	// For each order we find best agent
+	for _, orderScore := range orderScores {
+		order := orderScore.Order
+		bestAgent := findBestAgentForOrder(order, agentCapacities, warehouse)
+
+		if bestAgent == nil {
+			continue // No agent can handle this order
+		}
+
+		// Calculate metrics
+		distance := utils.HaversineDistance(
+			warehouse.Latitude,
+			warehouse.Longitude,
+			order.Latitude,
+			order.Longitude,
+		)
+		duration := int(distance * MINUTES_PER_KM)
+
+		// Create assignment
+		assignment := domain.OrderAssignment{
+			OrderID:           order.ID,
+			AgentID:           bestAgent.Agent.ID,
+			AssignedAt:        time.Now(),
+			EstimatedDistance: distance,
+			EstimatedDuration: duration,
+			Status:            "ASSIGNED",
+		}
+
+		// Update agent capacity
+		bestAgent.RemainingTime -= duration
+		bestAgent.RemainingDist -= distance
+		bestAgent.AssignedOrders = append(bestAgent.AssignedOrders, assignment)
+
+		allAssignments = append(allAssignments, assignment)
+	}
+
+	return allAssignments
+}
+
+```
+
+```go
+// this workload score helps to identify the best agent
+		workloadScore := float64(agent.RemainingTime) / MAX_WORKING_MINUTES
+		orderCountScore := 1.0 / (float64(len(agent.AssignedOrders)) + 1)
+
+		// similar to order, we gave workload a factor of 0.6 and orderCount a factor f .4
+		score := workloadScore*0.6 + orderCountScore*0.4
+
+
+```
+
+Key Components:
+1. **Agent Capacity Management**
+   - Tracks remaining work hours (10-hour daily limit)
+   - Monitors distance capacity (100 km limit)
+   - Maintains list of assigned orders per agent
+
+2. **Order Prioritization**
+   - Scores orders based on multiple factors:
+     - Distance from warehouse (60% weight)
+     - Order age/waiting time (40% weight)
+   - Lower scores get higher priority
+
+3. **Intelligent Agent Selection**
+   - Evaluates agents based on:
+     - Current workload capacity
+     - Number of existing assignments (load balancing)
+     - Vehicle type suitability
+
+Key Features:
+- Dynamic workload balancing across available agents
+- Prioritizes older orders while considering distance efficiency
+- Real-time capacity tracking and adjustment
+- Configurable parameters for distance and time limits
+  - Maximum working time: 10 hours (600 minutes)
+  - Maximum travel distance: 100 km
+  - Travel time estimation: 5 minutes per kilometer
+
+Algorithm Flow:
+1. Initialize agent capacities with fresh daily limits
+2. Score and sort pending orders by priority
+3. For each order:
+   - Find the most suitable agent based on capacity and workload
+   - Calculate estimated distance and duration
+   - Update agent's remaining capacity
+   - Create order assignment
+
+Improvements over v1:
+- More sophisticated order prioritization
+- Better load balancing across agents
+- Consideration of agent's current workload
+- More efficient resource utilization
+- Scalable and maintainable code structure
+
 
 
 ## License
