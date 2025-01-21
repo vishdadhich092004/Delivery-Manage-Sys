@@ -7,7 +7,7 @@ import (
 )
 
 func SetupRoutes(db *gorm.DB) *gin.Engine {
-	router := gin.Default()
+	router := gin.New()
 
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
