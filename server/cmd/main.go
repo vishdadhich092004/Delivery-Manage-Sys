@@ -6,7 +6,6 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/vishdadhich092004/delivery-management-system/internal/config"
 	"github.com/vishdadhich092004/delivery-management-system/internal/routes"
-	"github.com/vishdadhich092004/delivery-management-system/internal/seed"
 )
 
 func main() {
@@ -23,7 +22,7 @@ func main() {
 	router := routes.SetupRoutes(db)
 
 	// to seed data
-	seed.SeedDB()
+	// seed.SeedDB()
 	log.Printf("Server is running on %s", cfg.PORT)
 	router.Run(":" + cfg.PORT)
 

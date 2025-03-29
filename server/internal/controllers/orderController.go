@@ -37,17 +37,17 @@ func (oc *OrderController) GetOrders(ctx *gin.Context) {
 }
 
 // Fetch a specific order by ID
-func (oc *OrderController) GetOrder(ctx *gin.Context) {
-	id := ctx.Param("id")
-	var order domain.Order
-	if err := oc.db.First(&order, "id = ?", id).Error; err != nil {
-		ctx.JSON(http.StatusNotFound, response.ApiResponse(404, "error", gin.H{
-			"error": "Order not found",
-		}))
-		return
-	}
-	ctx.JSON(http.StatusOK, response.ApiResponse(200, "success", order))
-}
+// func (oc *OrderController) GetOrder(ctx *gin.Context) {
+// 	id := ctx.Param("id")
+// 	var order domain.Order
+// 	if err := oc.db.First(&order, "id = ?", id).Error; err != nil {
+// 		ctx.JSON(http.StatusNotFound, response.ApiResponse(404, "error", gin.H{
+// 			"error": "Order not found",
+// 		}))
+// 		return
+// 	}
+// 	ctx.JSON(http.StatusOK, response.ApiResponse(200, "success", order))
+// }
 
 // Create a new order
 func (oc *OrderController) CreateOrder(ctx *gin.Context) {
